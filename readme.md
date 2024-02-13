@@ -7,6 +7,7 @@ homework-frontend
 0. 깃허브 레포지토리 생성
     * 단계 별로 구분하여 각각 다른 폴더에서 작업
     * 좋은 커밋 메시지로 자주 커밋
+    * 계획 등 변경 시, 본 문서 수정
 
 
 1. mongoose 모델 스키마 구성 - Campaign, Comment

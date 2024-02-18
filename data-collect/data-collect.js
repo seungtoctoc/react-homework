@@ -1,5 +1,4 @@
 import axios from 'axios';
-import * as cheerio from 'cheerio';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
@@ -14,12 +13,27 @@ async function fetchWadiz() {
     const wadizResp = await axios.post(wadizUrl, {
       startNum: 48, 
       order: "support", 
-      limit: 48, 
+      limit: 2, 
       categoryCode: "", 
       endYn: ""
     });
-  
-    console.log(wadizResp.data.data.list);
+    const itemList = wadizResp.data.data.list;
+
+    const result = itemList.map((ele, idx) => {
+      return {
+        campaignId: ele.campaignId,
+        categoryName: ele.categoryName,
+        title: ele.title,
+        totalBackedAmount: ele.totalBackedAmount,
+        photoUrl: ele.photoUrl,
+        nickName: ele.nickName,
+        coreMessage: ele.coreMessage,
+        whenOpen: ele.whenOpen,
+        achievementRate: ele.achievementRate
+      }
+    });
+
+    console.log(result);
   } 
   catch (err) {
     console.error(err);

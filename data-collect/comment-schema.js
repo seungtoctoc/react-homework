@@ -17,12 +17,12 @@ const CommentSchma = new mongoose.Schema({
     whenCreated: {
         type: Date,
     },
-    commentReplys : {
+    commentReplys : [{
         type: mongoose.Types.ObjectId,
         ref: "Comment",
-    },
+    }],
     depth: {
-        type: String,
+        type: Number,
     },
 }, {timestamps: true});
 

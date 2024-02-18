@@ -9,7 +9,7 @@ dotenv.config();
 
 async function connectDB() {
   mongoose.connect(process.env.MONGO, { dbName: 'wadiz'})
-  .then(async() => {
+  .then(() => {
     console.log('connected');
   })
   .catch(err => {
@@ -18,7 +18,6 @@ async function connectDB() {
 }
 
 async function getCampaingns() {
-  // fetch
   try {
     const wadizUrl = 'https://service.wadiz.kr/api/search/funding';
     const wadizResp = await axios.post(wadizUrl, {
@@ -48,7 +47,7 @@ async function getCampaingns() {
   } 
   catch (err) {
     console.error(err);
-    console.log("err")
+    console.log("error in getCampaigns")
   }
 }
 
@@ -56,49 +55,95 @@ async function saveCampaignAndComment(filteredCampaingns) {
   const commentCommonUrl = 'https://www.wadiz.kr/web/reward/api/comments/campaigns/';
   const commentCommonParams = '?page=0&size=2&commentGroupType=CAMPAIGN&rewardCommentType=';
 
-  filteredCampaingns.forEach(async (campaign, idx) => {
-    const savedCampaignId = saveCampaignAndGetId(campaign);
+  try {
+    for (const campaign of filteredCampaingns) {
+      const savedCampaignId = await saveCampaignAndGetId(campaign);
 
-    const commentUrl = commentCommonUrl + campaign.campaignId + commentCommonParams;
-    const commentResp = await axios.get(commentUrl);
-    const comments = commentResp.data.data.content.slice(0, 5);
-    
-    console.log("\n\n\n-------------------------------------------");
-    console.log(comments);
-
-    // comments.forEach((ele, idx) => {
-    //   Comment.create({
-    //     body: ele.body,
-    //     Campaign: savedCampaignId,
-    //     commentType: ele.commentType,
-    //     userNickname: ele.userNickname,
-    //     whenCreated : ele.whenCreated,
-    //     commentReplys: ele.commentReplys,
-    //     depth 
-    //   })
-    // })
-    
-  })
+      const commentUrl = commentCommonUrl + campaign.campaignId + commentCommonParams;
+      const commentResp = await axios.get(commentUrl);
+      const comments = commentResp.data.data.content.slice(0, 5);
+      
+      console.log("campai id: ", savedCampaignId);
+      await saveCommentAndReply(comments, savedCampaignId);
+    }
+  }
+  catch (err) {
+    console.error(err);
+    console.log("error in saveCampaignAndComment")
+  }
 }
 
-function saveCampaignAndGetId(campaign) {
-  Campaign.create({
-    campaignId: campaign.campaignId,
-    categoryName: campaign.categoryName,
-    title: campaign.title,
-    totalBackedAmount: campaign.totalBackedAmount,
-    photoUrl: campaign.photoUrl,
-    nickName: campaign.nickName,
-    coreMessage: campaign.coreMessage,
-    whenOpen: campaign.whenOpen,
-    achievementRate: campaign.achievementRate
-  })
-    .then(savedCampaign => {
-      console.log("savedCam's id: ", savedCampaign._id);
-      return savedCampaign._id;
+async function saveCampaignAndGetId(campaign) {
+  try {
+    const savedCampaign = await Campaign.create({
+      campaignId: campaign.campaignId,
+      categoryName: campaign.categoryName,
+      title: campaign.title,
+      totalBackedAmount: campaign.totalBackedAmount,
+      photoUrl: campaign.photoUrl,
+      nickName: campaign.nickName,
+      coreMessage: campaign.coreMessage,
+      whenOpen: campaign.whenOpen,
+      achievementRate: campaign.achievementRate
     })
+
+    console.log("savedCam's id: ", savedCampaign._id);
+    return savedCampaign._id;
+  }
+  catch (err) {
+    console.error(err);
+    console.log("error in saveCampaignAndGetId")
+  }
 }
 
+async function saveCommentAndReply(comments, savedCampaignId) {
+  try {
+    for (const comment of comments) {
+      const savedComment = await Comment.create({
+        body: comment.body,
+        Campaign: savedCampaignId,
+        commentType: comment.commentType,
+        userNickname: comment.userNickname,
+        whenCreated : comment.whenCreated,
+        depth: comment.depth
+      })
+
+      const replyIds = await saveReplyAndGetIds(comment.commentReplys, savedCampaignId);
+      await Comment.updateOne({_id: savedComment._id}, {commentReplys: replyIds});
+    }
+  }
+  catch (err) {
+    console.error(err);
+    console.log("error in saveCommentAndReply")
+  }
+}
+
+async function saveReplyAndGetIds(commentReplys, savedCampaignId) {
+  try {
+    let replyIds = [];
+
+    for (const reply of commentReplys) {
+      const savedReply = await Comment.create({
+        body: reply.body,
+        Campaign: savedCampaignId,
+        commentType: reply.commentType,
+        userNickname: reply.userNickname,
+        whenCreated : reply.whenCreated,
+        depth: reply.depth
+      })
+
+      replyIds.push(savedReply._id);
+      await Comment.updateOne({_id: savedReply._id}, {commentReplys: savedReply._id});
+    }
+
+    console.log("ids: ", replyIds);
+    return replyIds;
+  }
+  catch (err) {
+    console.error(err);
+    console.log("error in getReplys")
+  }
+}
 
 connectDB()
   .then(() => {

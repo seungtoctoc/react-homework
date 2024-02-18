@@ -7,11 +7,11 @@ homework-frontend
 0. 깃허브 레포지토리 생성
     * 좋은 커밋 메시지로 자주 커밋
     * 계획 등 변경 시, 본 문서 수정
-    * 단계 별로 구분하여 각각 다른 폴더에서 작업
 
 <br>
 
 1. mongoose 모델 스키마 구성 - Campaign, Comment
+    * data-collect folder
     * Comment가 Campaign을 참조
     * Comment의 대댓글, 대댓글 깊이 속성
         * 일반 댓글의 경우, 대댓글 - 자기 자신, 대댓글 깊이 - 1 로,
@@ -20,6 +20,7 @@ homework-frontend
 <br>
 
 2. 와디즈 데이터 수집 (JS)
+    * data-collect folder
     * 데이터를 수집하고 스키마에 저장
     * env 환경변수 사용
 

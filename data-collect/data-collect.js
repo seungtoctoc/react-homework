@@ -10,7 +10,7 @@ dotenv.config();
 async function connectDB() {
   try {
     await mongoose.connect(process.env.MONGO, { dbName: 'wadiz'})
-    console.log('connected');
+    console.log('DB connected');
   }
   catch (err) {
     console.log("error in connectDB");
@@ -18,8 +18,9 @@ async function connectDB() {
 }
 
 async function getCampaingns() {
+  const wadizUrl = 'https://service.wadiz.kr/api/search/funding';
+
   try {
-    const wadizUrl = 'https://service.wadiz.kr/api/search/funding';
     const wadizResp = await axios.post(wadizUrl, {
       startNum: 0, 
       order: "support", 
@@ -29,21 +30,7 @@ async function getCampaingns() {
     });
     const campaigns = wadizResp.data.data.list;
 
-    const filteredCampaingns = campaigns.map((ele, idx) => {
-      return {
-        campaignId: ele.campaignId,
-        categoryName: ele.categoryName,
-        title: ele.title,
-        totalBackedAmount: ele.totalBackedAmount,
-        photoUrl: ele.photoUrl,
-        nickName: ele.nickName,
-        coreMessage: ele.coreMessage,
-        whenOpen: ele.whenOpen,
-        achievementRate: ele.achievementRate
-      }
-    });
-
-    return filteredCampaingns;
+    return campaigns;
   } 
   catch (err) {
     console.log("error in getCampaigns");
@@ -56,13 +43,11 @@ async function saveCampaignAndComment(filteredCampaingns) {
 
   try {
     for (const campaign of filteredCampaingns) {
-      const savedCampaignId = await saveCampaignAndGetId(campaign);
-
       const commentUrl = commentCommonUrl + campaign.campaignId + commentCommonParams;
       const commentResp = await axios.get(commentUrl);
       const comments = commentResp.data.data.content.slice(0, 5);
-      
-      console.log("campai id: ", savedCampaignId);
+
+      const savedCampaignId = await saveCampaignAndGetId(campaign);
       await saveCommentAndReply(comments, savedCampaignId);
     }
   }
@@ -85,7 +70,6 @@ async function saveCampaignAndGetId(campaign) {
       achievementRate: campaign.achievementRate
     })
 
-    console.log("savedCam's id: ", savedCampaign._id);
     return savedCampaign._id;
   }
   catch (err) {
@@ -132,7 +116,6 @@ async function saveReplyAndGetIds(commentReplys, savedCampaignId) {
       await Comment.updateOne({_id: savedReply._id}, {commentReplys: savedReply._id});
     }
 
-    console.log("ids: ", replyIds);
     return replyIds;
   }
   catch (err) {

@@ -7,6 +7,10 @@ import Comment from './comment-schema.js';
 
 dotenv.config();
 
+const CAMPAIGNS_LIMIT = 20;
+const COMMENTS_LIMIT = 20;
+const REPLYS_LIMIT = 20;
+
 async function connectDB() {
   try {
     await mongoose.connect(process.env.MONGO, { dbName: 'wadiz'});
@@ -23,7 +27,7 @@ async function getCampaingns() {
     const wadizResp = await axios.post(wadizUrl, {
       startNum: 0, 
       order: "support", 
-      limit: 20, 
+      limit: CAMPAIGNS_LIMIT, 
       categoryCode: "", 
       endYn: ""
     });
@@ -44,7 +48,7 @@ async function saveCampaignAndComment(filteredCampaingns) {
     for (const campaign of filteredCampaingns) {
       const commentUrl = commentCommonUrl + campaign.campaignId + commentCommonParams;
       const commentResp = await axios.get(commentUrl);
-      const comments = commentResp.data.data.content.slice(0, 20);
+      const comments = commentResp.data.data.content.slice(0, COMMENTS_LIMIT);
 
       const savedCampaignId = await saveCampaignAndGetId(campaign);
       await saveCommentAndReply(comments, savedCampaignId);
@@ -88,7 +92,8 @@ async function saveCommentAndReply(comments, savedCampaignId) {
         depth: comment.depth
       })
 
-      const replyIds = await saveReplyAndGetIds(comment.commentReplys, savedCampaignId);
+      const slicedReplys = comment.commentReplys.slice(0, REPLYS_LIMIT);
+      const replyIds = await saveReplyAndGetIds(slicedReplys, savedCampaignId);
       await Comment.updateOne({_id: savedComment._id}, {commentReplys: replyIds});
     }
   }

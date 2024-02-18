@@ -16,7 +16,7 @@ const CampaignSchma = new mongoose.Schema({
     photoUrl: {
         type: String,
     },
-    nickname : {
+    nickName : {
         type: String,
     },
     coreMessage: {

@@ -39,4 +39,25 @@ const CampaignSchma = new mongoose.Schema({
     },
 }, {timestamps: true});
 
+CampaignSchma.statics.createCampaign = async function (campaignId, categoryName, title, totalBackedAmount, photoUrl, nickname, coreMessage, whenOpen, achivementRate) {
+    try {
+        await this.create({campaignId, categoryName, title, totalBackedAmount, photoUrl, nickname, coreMessage, whenOpen, achivementRate});
+
+        return {
+            campaignId: campaignId,
+            categoryName: categoryName,
+            title: title,
+            totalBackedAmount: totalBackedAmount,
+            photoUrl: photoUrl,
+            nickname: nickname,
+            coreMessage: coreMessage,
+            whenOpen: whenOpen,
+            achivementRate: achivementRate,
+        }
+    }
+    catch (err) {
+        throw err;
+    }
+}
+
 const Campaign = mongoose.model('Campaign', CampaignSchma);

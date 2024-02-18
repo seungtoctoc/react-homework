@@ -87,7 +87,7 @@ async function saveCommentAndReply(comments, savedCampaignId) {
         body: comment.body,
         Campaign: savedCampaignId,
         commentType: comment.commentType,
-        userNickname: comment.userNickname,
+        nickName: comment.nickName,
         whenCreated : comment.whenCreated,
         depth: comment.depth
       })

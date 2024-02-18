@@ -25,7 +25,7 @@ const CampaignSchma = new mongoose.Schema({
     whenOpen : {
         type: Date,
     },
-    achivementRate : {
+    achievementRate : {
         type: Number,
     },
 }, {timestamps: true});

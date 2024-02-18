@@ -11,7 +11,7 @@ const CommentSchma = new mongoose.Schema({
     commentType: {
         type: String,
     },
-    userNickname : {
+    nickName : {
         type: String,
     },
     whenCreated: {

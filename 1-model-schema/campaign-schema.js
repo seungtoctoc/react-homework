@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const campaignSchma = new mongoose.Schema({
+const CampaignSchma = new mongoose.Schema({
     campaignId: {
         type: String,
     },
@@ -30,4 +30,4 @@ const campaignSchma = new mongoose.Schema({
     },
 }, {timestamps: true});
 
-const campaign = mongoose.model('campaign', campaignSchma);
+const Campaign = mongoose.model('campaign', CampaignSchma);

@@ -30,4 +30,4 @@ const CampaignSchma = new mongoose.Schema({
     },
 }, {timestamps: true});
 
-const Campaign = mongoose.model('campaign', CampaignSchma);
+const Campaign = mongoose.model('Campaign', CampaignSchma);

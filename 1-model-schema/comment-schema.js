@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const commentSchma = new mongoose.Schema({
+const CommentSchma = new mongoose.Schema({
     body: {
         type: String,
     },
@@ -21,4 +21,4 @@ const commentSchma = new mongoose.Schema({
     },
 }, {timestamps: true});
 
-const comment = mongoose.model('comment', commentSchma);
+const Comment = mongoose.model('Comment', CommentSchma);

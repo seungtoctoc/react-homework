@@ -3,23 +3,34 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
 import Campaign from './campaign-schema.js';
+import Comment from './comment-schema.js';
 
 dotenv.config();
 
-async function fetchWadiz() {
-  const wadizUrl = 'https://service.wadiz.kr/api/search/funding';
+async function connectDB() {
+  mongoose.connect(process.env.MONGO, { dbName: 'wadiz'})
+  .then(async() => {
+    console.log('connected');
+  })
+  .catch(err => {
+    console.log(err);
+  });
+}
 
+async function getCampaingns() {
+  // fetch
   try {
+    const wadizUrl = 'https://service.wadiz.kr/api/search/funding';
     const wadizResp = await axios.post(wadizUrl, {
-      startNum: 48, 
+      startNum: 0, 
       order: "support", 
       limit: 2, 
       categoryCode: "", 
       endYn: ""
     });
-    const itemList = wadizResp.data.data.list;
+    const campaigns = wadizResp.data.data.list;
 
-    const result = itemList.map((ele, idx) => {
+    const filteredCampaingns = campaigns.map((ele, idx) => {
       return {
         campaignId: ele.campaignId,
         categoryName: ele.categoryName,
@@ -33,7 +44,7 @@ async function fetchWadiz() {
       }
     });
 
-    console.log(result);
+    return filteredCampaingns;
   } 
   catch (err) {
     console.error(err);
@@ -41,38 +52,61 @@ async function fetchWadiz() {
   }
 }
 
+async function saveCampaignAndComment(filteredCampaingns) {
+  const commentCommonUrl = 'https://www.wadiz.kr/web/reward/api/comments/campaigns/';
+  const commentCommonParams = '?page=0&size=2&commentGroupType=CAMPAIGN&rewardCommentType=';
 
+  filteredCampaingns.forEach(async (campaign, idx) => {
+    const savedCampaignId = saveCampaignAndGetId(campaign);
 
+    const commentUrl = commentCommonUrl + campaign.campaignId + commentCommonParams;
+    const commentResp = await axios.get(commentUrl);
+    const comments = commentResp.data.data.content.slice(0, 5);
+    
+    console.log("\n\n\n-------------------------------------------");
+    console.log(comments);
 
-
-
-
-
-function saveDatas() {
-  mongoose.connect(
-    process.env.MONGO,
-    {
-      dbName: 'wadiz'
-    }
-  )
-  .then(async() => {
-    console.log('connected');
-
-    // Campaign.create({
-    //   campaignId: 'testId2233',
-    //   categoryName: 'TestCategory2233',
-    //   title: 'Test Campaign2233'
+    // comments.forEach((ele, idx) => {
+    //   Comment.create({
+    //     body: ele.body,
+    //     Campaign: savedCampaignId,
+    //     commentType: ele.commentType,
+    //     userNickname: ele.userNickname,
+    //     whenCreated : ele.whenCreated,
+    //     commentReplys: ele.commentReplys,
+    //     depth 
+    //   })
     // })
-
-
-    // console.log("complete");
+    
   })
-  .catch(err => {
-    console.log(err);
-  });
+}
+
+function saveCampaignAndGetId(campaign) {
+  Campaign.create({
+    campaignId: campaign.campaignId,
+    categoryName: campaign.categoryName,
+    title: campaign.title,
+    totalBackedAmount: campaign.totalBackedAmount,
+    photoUrl: campaign.photoUrl,
+    nickName: campaign.nickName,
+    coreMessage: campaign.coreMessage,
+    whenOpen: campaign.whenOpen,
+    achievementRate: campaign.achievementRate
+  })
+    .then(savedCampaign => {
+      console.log("savedCam's id: ", savedCampaign._id);
+      return savedCampaign._id;
+    })
 }
 
 
-
-fetchWadiz();
-
+connectDB()
+  .then(() => {
+    return getCampaingns()
+  })
+  .then(Campaingns => {
+    saveCampaignAndComment(Campaingns);
+  })
+  .catch(err => {
+    console.log(err);
+  })

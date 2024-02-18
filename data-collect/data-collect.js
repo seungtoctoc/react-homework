@@ -9,8 +9,7 @@ dotenv.config();
 
 async function connectDB() {
   try {
-    await mongoose.connect(process.env.MONGO, { dbName: 'wadiz'})
-    console.log('DB connected');
+    await mongoose.connect(process.env.MONGO, { dbName: 'wadiz'});
   }
   catch (err) {
     console.log("error in connectDB");
@@ -24,7 +23,7 @@ async function getCampaingns() {
     const wadizResp = await axios.post(wadizUrl, {
       startNum: 0, 
       order: "support", 
-      limit: 2, 
+      limit: 20, 
       categoryCode: "", 
       endYn: ""
     });
@@ -45,7 +44,7 @@ async function saveCampaignAndComment(filteredCampaingns) {
     for (const campaign of filteredCampaingns) {
       const commentUrl = commentCommonUrl + campaign.campaignId + commentCommonParams;
       const commentResp = await axios.get(commentUrl);
-      const comments = commentResp.data.data.content.slice(0, 5);
+      const comments = commentResp.data.data.content.slice(0, 20);
 
       const savedCampaignId = await saveCampaignAndGetId(campaign);
       await saveCommentAndReply(comments, savedCampaignId);
@@ -126,9 +125,17 @@ async function saveReplyAndGetIds(commentReplys, savedCampaignId) {
 // main
 try {
   await connectDB();
+  console.log('connect DB successfully');
+
   const campaigns = await getCampaingns();
+  console.log('get campaingns successfully');
+
+  console.log('start fetch campaigns and comments');
   await saveCampaignAndComment(campaigns);
+  console.log('fetched campaigns and comments successfully');
+
   mongoose.disconnect();
+  console.log('disconnect DB');
 }
 catch (err) {
   console.log("error in main");

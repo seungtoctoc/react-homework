@@ -10,8 +10,26 @@ const CampaignSchma = new mongoose.Schema({
     title: {
         type: String,
     },
+    totalBackedAmount : {
+        type: Number,
+    },
+    photoUrl: {
+        type: String,
+    },
+    nickname : {
+        type: String,
+    },
+    coreMessage: {
+        type: String,
+    },
+    whenOpen : {
+        type: Date,
+    },
+    achivementRate : {
+        type: Number,
+    },
 }, {timestamps: true});
 
-const Campaign = mongoose.model('campaign', CampaignSchma);
+const Campaign = mongoose.model('Campaign', CampaignSchma);
 
 export default Campaign;

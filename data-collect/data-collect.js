@@ -8,13 +8,13 @@ import Comment from './comment-schema.js';
 dotenv.config();
 
 async function connectDB() {
-  mongoose.connect(process.env.MONGO, { dbName: 'wadiz'})
-  .then(() => {
+  try {
+    await mongoose.connect(process.env.MONGO, { dbName: 'wadiz'})
     console.log('connected');
-  })
-  .catch(err => {
-    console.log(err);
-  });
+  }
+  catch (err) {
+    console.log("error in connectDB");
+  }
 }
 
 async function getCampaingns() {
@@ -46,8 +46,7 @@ async function getCampaingns() {
     return filteredCampaingns;
   } 
   catch (err) {
-    console.error(err);
-    console.log("error in getCampaigns")
+    console.log("error in getCampaigns");
   }
 }
 
@@ -68,8 +67,7 @@ async function saveCampaignAndComment(filteredCampaingns) {
     }
   }
   catch (err) {
-    console.error(err);
-    console.log("error in saveCampaignAndComment")
+    console.log("error in saveCampaignAndComment");
   }
 }
 
@@ -91,8 +89,7 @@ async function saveCampaignAndGetId(campaign) {
     return savedCampaign._id;
   }
   catch (err) {
-    console.error(err);
-    console.log("error in saveCampaignAndGetId")
+    console.log("error in saveCampaignAndGetId");
   }
 }
 
@@ -113,8 +110,7 @@ async function saveCommentAndReply(comments, savedCampaignId) {
     }
   }
   catch (err) {
-    console.error(err);
-    console.log("error in saveCommentAndReply")
+    console.log("error in saveCommentAndReply");
   }
 }
 
@@ -140,18 +136,17 @@ async function saveReplyAndGetIds(commentReplys, savedCampaignId) {
     return replyIds;
   }
   catch (err) {
-    console.error(err);
-    console.log("error in getReplys")
+    console.log("error in getReplys");
   }
 }
 
-connectDB()
-  .then(() => {
-    return getCampaingns()
-  })
-  .then(Campaingns => {
-    saveCampaignAndComment(Campaingns);
-  })
-  .catch(err => {
-    console.log(err);
-  })
+// main
+try {
+  await connectDB();
+  const campaigns = await getCampaingns();
+  await saveCampaignAndComment(campaigns);
+  mongoose.disconnect();
+}
+catch (err) {
+  console.log("error in main");
+}

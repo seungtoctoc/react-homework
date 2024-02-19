@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const dotenv = require('dotenv');
 const mongoose = require("mongoose");
+const cors = require('cors');
 
 var indexRouter = require('./routes/index');
 
@@ -14,7 +15,9 @@ var app = express();
 // app.set('views', path.join(__dirname, 'views'));
 // app.set('view engine', 'ejs');
 
+app.use(cors());
 dotenv.config();
+
 mongoose.connect(process.env.MONGO, { dbName: 'wadiz'})
   .then(() => {
     console.log("db connected");

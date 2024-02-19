@@ -3,7 +3,7 @@
 
 
 .env
-
+node_modules
 
 ### macOS ###
 # General

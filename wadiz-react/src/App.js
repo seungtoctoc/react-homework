@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 import Board from "./components/Board";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 function App() {
   const [campaigns, setCampaigns] = useState([]);
@@ -29,6 +30,7 @@ function App() {
     <div className="App">
       <Header></Header>
       <Board campaigns={campaigns}></Board>
+      <Footer></Footer>
     </div>
   );
 }

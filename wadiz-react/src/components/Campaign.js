@@ -5,7 +5,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 
 export default function Campaign(props) {
   const campaign = props.campaign;
-  console.log(campaign);
+
   return (
     <div>
       <Card style={{ width: "18rem" }}>

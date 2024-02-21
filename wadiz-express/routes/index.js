@@ -1,27 +1,26 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
 
-const Campaign = require('../models/campaign-schema');
-const Comment = require('../models/comment-schema');
+const Campaign = require("../models/campaign-schema");
+const Comment = require("../models/comment-schema");
 
-router.get('/campaign', async function(req, res, next) {
+router.get("/campaign", async function (req, res, next) {
   try {
     const campaigns = Campaign.find({});
     res.send(campaigns);
-  }
-  catch(err) {
-    res.send('err: ' + err);
+  } catch (err) {
+    res.send("err: " + err);
   }
 });
 
-router.post('/:campaignId/comment/:commentId', async function(req, res, next) {
+router.post("/:campaignId/comment/:commentId", async function (req, res, next) {
   try {
     const campaignId = req.params.campaignId;
     const commentId = req.params.commentId;
     const { body, nickName } = req.body;
-    
+
     // 댓글의 commentReplys 배열 크기로 depth 구하기
-    const comment = await Comment.findOne({_id: commentId});
+    const comment = await Comment.findOne({ _id: commentId });
     const depth = comment.commentReplys.length + 1;
 
     // 대댓글 저장
@@ -30,14 +29,15 @@ router.post('/:campaignId/comment/:commentId', async function(req, res, next) {
       Campaign: campaignId,
       commentType: null,
       nickName: nickName,
-      whenCreated : new Date(),
+      whenCreated: new Date(),
       depth: depth,
-      commentReplys: []
-    })
+      commentReplys: [],
+    });
 
     // 댓글의 commentReplys 업데이트
-    await Comment.findByIdAndUpdate(commentId,
-      { $push: { commentReplys: savedComment._id }},
+    await Comment.findByIdAndUpdate(
+      commentId,
+      { $push: { commentReplys: savedComment._id } },
       { new: true }
     );
 
@@ -48,13 +48,12 @@ router.post('/:campaignId/comment/:commentId', async function(req, res, next) {
     // );
 
     res.send(savedComment);
-  }
-  catch(err) {
-    res.send('err: ' + err);
+  } catch (err) {
+    res.send("err: " + err);
   }
 });
 
-router.post('/:campaignId/comment', async function(req, res, next) {
+router.post("/:campaignId/comment", async function (req, res, next) {
   try {
     const campaignId = req.params.campaignId;
     const { body, nickName } = req.body;
@@ -64,34 +63,34 @@ router.post('/:campaignId/comment', async function(req, res, next) {
       Campaign: campaignId,
       commentType: null,
       nickName: nickName,
-      whenCreated : new Date(),
+      whenCreated: new Date(),
       depth: 0,
-      commentReplys: []
-    })
+      commentReplys: [],
+    });
 
     res.send(savedComment);
-  }
-  catch(err) {
-    res.send('err: ' + err);
+  } catch (err) {
+    res.send("err: " + err);
   }
 });
 
-router.get('/:campaignId', async function(req, res, next) {
+router.get("/:campaignId", async function (req, res, next) {
   try {
     const campaignId = req.params.campaignId;
 
-    const campaign = await Campaign.findOne({_id: campaignId})
-    const comments = await Comment.find({Campaign: campaignId, depth: 0}).populate(Comment);
+    const campaign = await Campaign.findOne({ _id: campaignId });
+    const comments = await Comment.find({
+      Campaign: campaignId,
+      depth: 0,
+    }).populate(Comment);
 
     res.send({
       campaign: campaign,
-      comments: comments
-    })
+      comments: comments,
+    });
+  } catch (err) {
+    res.send("err: " + err);
   }
-  catch(err) {
-    res.send('err: ' + err);
-  }
-
-})
+});
 
 module.exports = router;

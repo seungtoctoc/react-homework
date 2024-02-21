@@ -1,35 +1,38 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const CampaignSchma = new mongoose.Schema({
+const CampaignSchma = new mongoose.Schema(
+  {
     campaignId: {
-        type: String,
+      type: String,
     },
     categoryName: {
-        type: String,
+      type: String,
     },
     title: {
-        type: String,
+      type: String,
     },
-    totalBackedAmount : {
-        type: Number,
+    totalBackedAmount: {
+      type: Number,
     },
     photoUrl: {
-        type: String,
+      type: String,
     },
-    nickName : {
-        type: String,
+    nickName: {
+      type: String,
     },
     coreMessage: {
-        type: String,
+      type: String,
     },
-    whenOpen : {
-        type: Date,
+    whenOpen: {
+      type: Date,
     },
-    achievementRate : {
-        type: Number,
+    achievementRate: {
+      type: Number,
     },
-}, {timestamps: true});
+  },
+  { timestamps: true }
+);
 
-const Campaign = mongoose.model('Campaign', CampaignSchma);
+const Campaign = mongoose.model("Campaign", CampaignSchma);
 
 export default Campaign;

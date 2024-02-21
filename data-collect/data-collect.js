@@ -16,7 +16,7 @@ async function connectDB() {
     await mongoose.connect(process.env.MONGO, { dbName: 'wadiz'});
   }
   catch (err) {
-    console.log("error in connectDB");
+    console.log("error in connectDB, ", err);
   }
 }
 
@@ -36,7 +36,7 @@ async function getCampaingns() {
     return campaigns;
   } 
   catch (err) {
-    console.log("error in getCampaigns");
+    console.log("error in getCampaigns, ", err);
   }
 }
 
@@ -55,7 +55,7 @@ async function saveCampaignAndComment(filteredCampaingns) {
     }
   }
   catch (err) {
-    console.log("error in saveCampaignAndComment");
+    console.log("error in saveCampaignAndComment, ", err);
   }
 }
 
@@ -76,7 +76,7 @@ async function saveCampaignAndGetId(campaign) {
     return savedCampaign._id;
   }
   catch (err) {
-    console.log("error in saveCampaignAndGetId");
+    console.log("error in saveCampaignAndGetId, ", err);
   }
 }
 
@@ -98,7 +98,7 @@ async function saveCommentAndReply(comments, savedCampaignId) {
     }
   }
   catch (err) {
-    console.log("error in saveCommentAndReply");
+    console.log("error in saveCommentAndReply, ", err);
   }
 }
 
@@ -123,7 +123,7 @@ async function saveReplyAndGetIds(commentReplys, savedCampaignId) {
     return replyIds;
   }
   catch (err) {
-    console.log("error in getReplys");
+    console.log("error in getReplys, ", err);
   }
 }
 
@@ -135,7 +135,7 @@ try {
   const campaigns = await getCampaingns();
   console.log('get campaingns successfully');
 
-  console.log('start fetch campaigns and comments');
+  console.log('start save campaigns and comments');
   await saveCampaignAndComment(campaigns);
   console.log('fetched campaigns and comments successfully');
 

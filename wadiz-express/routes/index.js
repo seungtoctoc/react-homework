@@ -6,7 +6,7 @@ const Comment = require('../models/comment-schema');
 
 router.get('/campaign', async function(req, res, next) {
   try {
-    const campaigns = Campaign.find({})
+    const campaigns = Campaign.find({});
     res.send(campaigns);
   }
   catch(err) {
@@ -42,10 +42,10 @@ router.post('/:campaignId/comment/:commentId', async function(req, res, next) {
     );
 
     // 대댓글의 commentReplys 업데이트
-    await Comment.findByIdAndUpdate(savedComment._id,
-      { $push: { commentReplys: savedComment._id }},
-      { new: true }
-    );
+    // await Comment.findByIdAndUpdate(savedComment._id,
+    //   { $push: { commentReplys: savedComment._id }},
+    //   { new: true }
+    // );
 
     res.send(savedComment);
   }
@@ -81,7 +81,7 @@ router.get('/:campaignId', async function(req, res, next) {
     const campaignId = req.params.campaignId;
 
     const campaign = await Campaign.findOne({_id: campaignId})
-    const comments = await Comment.find({Campaign: campaignId})
+    const comments = await Comment.find({Campaign: campaignId, depth: 0}).populate(Comment);
 
     res.send({
       campaign: campaign,

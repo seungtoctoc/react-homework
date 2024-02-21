@@ -117,7 +117,7 @@ async function saveReplyAndGetIds(commentReplys, savedCampaignId) {
       })
 
       replyIds.push(savedReply._id);
-      await Comment.updateOne({_id: savedReply._id}, {commentReplys: savedReply._id});
+      // await Comment.updateOne({_id: savedReply._id}, {commentReplys: savedReply._id});
     }
 
     return replyIds;

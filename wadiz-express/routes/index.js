@@ -6,7 +6,7 @@ const Comment = require("../models/comment-schema");
 
 router.get("/campaign", async function (req, res, next) {
   try {
-    const campaigns = Campaign.find({});
+    const campaigns = await Campaign.find({});
     res.send(campaigns);
   } catch (err) {
     res.send("err: " + err);

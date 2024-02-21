@@ -3,7 +3,7 @@ import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 
-import Board from "./components/Campaign";
+import Board from "./components/Board";
 import { useEffect, useState } from "react";
 
 function App() {
@@ -18,7 +18,7 @@ function App() {
       const campaignUrl = "/api/campaign";
       const campaignResp = await axios.get(campaignUrl);
 
-      setCampaigns(campaignResp);
+      setCampaigns(campaignResp.data);
     } catch (err) {
       console.log("err: ", err);
     }

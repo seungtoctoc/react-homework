@@ -15,7 +15,7 @@ export default function Board(props) {
       }}
     >
       {campaigns.map((campaign) => (
-        <Campaign campaign={campaign}></Campaign>
+        <Campaign key={campaign._id} campaign={campaign}></Campaign>
       ))}
     </div>
   );

@@ -2,9 +2,10 @@ import "./App.css";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
+import { useEffect, useState } from "react";
 
 import Board from "./components/Board";
-import { useEffect, useState } from "react";
+import Header from "./components/Header";
 
 function App() {
   const [campaigns, setCampaigns] = useState([]);
@@ -26,6 +27,7 @@ function App() {
 
   return (
     <div className="App">
+      <Header></Header>
       <Board campaigns={campaigns}></Board>
     </div>
   );

@@ -82,7 +82,7 @@ router.get("/:campaignId", async function (req, res, next) {
     const comments = await Comment.find({
       Campaign: campaignId,
       depth: 0,
-    }).populate(Comment);
+    }).populate("commentReplys");
 
     res.send({
       campaign: campaign,
